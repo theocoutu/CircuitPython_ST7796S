@@ -12,7 +12,7 @@ _INIT_SEQUENCE_L = (
     b"\x11\x80\x01"  # Sleep out and Delay 500ms
     b"\x3A\x81\x55\x0A"  # Set color mode to 16 bits per pixel and Delay 10ms
     b"\x36\x01\x28"  # Set MADCTL for landscape mode
-    b"\x20\x80\x01"  # Turn off inversion and Delay 10ms
+    b"\x21\x80\x01"  # Turn off inversion and Delay 10ms
     b"\x13\x80\x01"  # Normal display mode on and Delay 10ms
     b"\x29\x80\x01"  # Display on and Delay 500ms
 )
@@ -22,7 +22,7 @@ _INIT_SEQUENCE_P = (
     b"\x11\x80\x01"  # Sleep out and Delay 500ms
     b"\x3A\x81\x55\x0A"  # Set color mode to 16 bits per pixel and Delay 10ms
     b"\x36\x01\x48"  # Set MADCTL for portrait mode
-    b"\x20\x80\x01"  # Turn off inversion and Delay 10ms
+    b"\x21\x80\x01"  # Turn off inversion and Delay 10ms
     b"\x13\x80\x01"  # Normal display mode on and Delay 10ms
     b"\x29\x80\x01"  # Display on and Delay 500ms
 )
