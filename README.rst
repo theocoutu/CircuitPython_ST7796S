@@ -7,7 +7,6 @@ Introduction
     :target: https://adafru.it/discord
     :alt: Discord
 
-
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
     :alt: Code Style: Black
@@ -27,8 +26,8 @@ This is easily achieved by downloading
 or individual libraries can be installed using
 `circup <https://github.com/adafruit/circup>`_.
 
-Usage Example
-=============
+Usage Example (CPv8)
+====================
 
 .. code-block:: python
 
@@ -38,22 +37,102 @@ Usage Example
 	from adafruit_display_text import label
 	from circuitpython_st7796s import ST7796S
 	
-	spi = board.SPI()
-	while not spi.try_lock():
-		pass
-	spi.configure(baudrate=24000000)  # Configure SPI for 24MHz
-	spi.unlock()
-	tft_cs = board.D9
-	tft_dc = board.D10
-	tft_rst = board.D12
+	disp_spi = board.SPI() # OR # import busio;spi = busio.SPI(clock=board.PIN, MISO=board.PIN, MOSI=board.PIN)
+
+	while not disp_spi.try_lock():  #
+		pass		   	# Are these necessary?
+	disp_spi.unlock()		#
+
+	disp_cs = board.PIN
+	disp_dc = board.PIN
+	disp_rst = board.PIN
 	
-	# 4.0" ST7796S Display
-	DISPLAY_WIDTH = 480
-	DISPLAY_HEIGHT = 320
+	# ST7796S Display
+	DISP_ROTATION = 0  # supported values: 0, 90, 180, 270
+	DISP_SPEED = 80000000 # SPI bus clock frequency in Hz. Tested 3.5" display supports 80MHz.
+	DISP_WIDTH = 320 if DISPLAY_ROTATION == 0 or DISPLAY_ROTATION == 180 else 480
+	DISP_HEIGHT = 480 if DISPLAY_ROTATION == 0 or DISPLAY_ROTATION == 180 else 320
 	
 	displayio.release_displays()
-	display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
-	display = ST7796(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, rotation=270)
+	disp_bus = displayio.FourWire(
+				     disp_spi,
+				     command=disp_dc,
+				     chip_select=disp_cs,
+				     reset=disp_rst,
+				     baudrate=DISP_SPEED,
+				     phase=0,
+				     polarity=0
+				    )
+	display = ST7796(disp_bus, width=DISP_WIDTH, height=DISP_HEIGHT, rotation=DISP_ROTATION)
+	
+	# Quick Colors for Labels
+	TEXT_BLACK = 0x000000
+	TEXT_BLUE = 0x0000FF
+	TEXT_CYAN = 0x00FFFF
+	TEXT_GRAY = 0x8B8B8B
+	TEXT_GREEN = 0x00FF00
+	TEXT_LIGHTBLUE = 0x90C7FF
+	TEXT_MAGENTA = 0xFF00FF
+	TEXT_ORANGE = 0xFFA500
+	TEXT_PURPLE = 0x800080
+	TEXT_RED = 0xFF0000
+	TEXT_WHITE = 0xFFFFFF
+	TEXT_YELLOW = 0xFFFF00
+	
+	# Label Customizations
+	hello_label = label.Label(terminalio.FONT)
+	hello_label.anchor_point = (0.5, 1.0)
+	hello_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT/2)
+	hello_label.scale = (3)
+	hello_label.color = TEXT_WHITE
+	
+	# Create Display Groups
+	text_group = displayio.Group()
+	text_group.append(hello_label)
+	display.root_group = text_group
+	
+	while True:
+		hello_label.text = "HELLO WORLD!"
+
+
+Usage Example (CPv9)
+====================
+
+.. code-block:: python
+
+    	import board
+	import displayio, fourwire # split off into separate module
+	import terminalio
+	from adafruit_display_text import label
+	from circuitpython_st7796s import ST7796S
+	
+	disp_spi = board.SPI() # OR # import busio;spi = busio.SPI(clock=board.PIN, MISO=board.PIN, MOSI=board.PIN)
+
+	while not disp_spi.try_lock():  #
+		pass		   	# Are these necessary?
+	disp_spi.unlock()		#
+
+	disp_cs = board.PIN
+	disp_dc = board.PIN
+	disp_rst = board.PIN
+	
+	# ST7796S Display
+	DISP_ROTATION = 0  # supported values: 0, 90, 180, 270
+	DISP_SPEED = 80000000 # SPI bus clock frequency in Hz. Tested 3.5" display supports 80MHz.
+	DISP_WIDTH = 320 if DISPLAY_ROTATION == 0 or DISPLAY_ROTATION == 180 else 480
+	DISP_HEIGHT = 480 if DISPLAY_ROTATION == 0 or DISPLAY_ROTATION == 180 else 320
+	
+	displayio.release_displays()
+	disp_bus = fourwire.FourWire(
+				     disp_spi,
+				     command=disp_dc,
+				     chip_select=disp_cs,
+				     reset=disp_rst,
+				     baudrate=DISP_SPEED,
+				     phase=0,
+				     polarity=0
+				    )
+	display = ST7796(disp_bus, width=DISP_WIDTH, height=DISP_HEIGHT, rotation=DISP_ROTATION)
 	
 	# Quick Colors for Labels
 	TEXT_BLACK = 0x000000
